@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Check if help option is requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        echo "Folder Maker Script"
+        echo
+        echo "Usage: foldermaker [semester_year] [num_of_classes] [class1] [class2] ... [class#]"
+        echo
+        echo "Parameters:"
+        echo "  [semester_year]    The name of the semester and year (e.g., Fall_2024)."
+        echo "  [num_of_classes]    The number of classes (must be an integer)."
+        echo "  [class1], [class2], ...  The names of the classes (e.g., Math101, CS201)."
+        echo
+        echo "Description:"
+        echo "  This script creates a folder structure for organizing class materials for a given semester."
+        echo "  It creates a main directory named after the semester year, and inside it, directories for each class."
+        echo "  Each class directory will have the following subdirectories: Notes, Assignments, Midterm, Final."
+        echo
+        echo "Example usage:"
+        echo "  ./foldermaker Fall_2024 3 Math101 CS201 History101"
+        echo "    - Creates a Fall_2024 folder with directories for Math101, CS201, and History101."
+	exit 0
+
+
+
+if [ $# -lt 2 ]; then
+	echo "Needs args: foldermaker [semester_year] [ num of classes ] [class1] [class2] ... [class#] "
+	exit 1
+fi
+
+if [ -z $1 ]; then
+	echo "semester_year folder name needed"
+	exit 1
+fi
+
+makedir () {
+
+	if [ -d "$1" ]; then
+		return
+	else
+		mkdir $1
+		return
+	fi
+}
+
+makeclassdir () {
+
+	if [ -d "$1" ]; then
+		return
+	else
+		mkdir $1
+		cd "./$1"
+		#mkdir "Admin"
+		mkdir "Notes"
+		mkdir "Assingments"
+		mkdir "Midterm"
+		mkdir "Final"
+		cd ".."
+		return
+	fi
+}
+
+num=$(echo $2 | grep -E '[0-9]')
+
+if [ -n $num ]; then 
+		
+	makedir "$1"
+	cd "./"$1""
+	mkdir "Admin"
+	for (( i = 1; i <= "$num" ; i++ ))
+	do
+		echo "Making directory for "$3""
+		makeclassdir "$3"	
+		shift
+	done
+	echo -e "All done!!!\n"
+	exit 0
+else
+	echo "Needs int for number of classes"
+	echo $num
+	exit 1
+fi
